@@ -26,7 +26,7 @@ let jdNotify = false;//是否关闭通知，false打开通知推送，true关闭
 let goodsUrl = '', taskInfoKey = [];
 let randomCount = $.isNode() ? 20 : 5;
 
-$.shareCodesArr = [];
+//$.shareCodesArr = [];
 
 notify = $.isNode() ? require('./sendNotify') : '';
 
@@ -45,7 +45,7 @@ if ($.isNode()) {
         $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
         return;
     }
-
+    await requireConfig()
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -523,6 +523,28 @@ function shareCodesFormat() {
     })
 }
 
+function requireConfig() {
+    return new Promise(resolve => {
+        console.log('开始获取东东萌宠配置文件\n')
+
+        console.log(`共${cookiesArr.length}个京东账号\n`)
+        $.shareCodesArr = [];
+        if ($.isNode()) {
+            Object.keys(jdPetShareCodes).forEach((item) => {
+                if (jdPetShareCodes[item]) {
+                    $.shareCodesArr.push(jdPetShareCodes[item])
+                }
+            })
+        } else {
+            if ($.getdata('jd_pet_inviter')) $.shareCodesArr = $.getdata('jd_pet_inviter').split('\n').filter(item => !!item);
+            console.log(`\nBoxJs设置的${$.name}好友邀请码:${$.getdata('jd_pet_inviter') ? $.getdata('jd_pet_inviter') : '暂无'}\n`);
+        }
+        // console.log(`$.shareCodesArr::${JSON.stringify($.shareCodesArr)}`)
+        // console.log(`jdPetShareArr账号长度::${$.shareCodesArr.length}`)
+        console.log(`您提供了${$.shareCodesArr.length}个账号的东东萌宠助力码\n`);
+        resolve()
+    })
+}
 //
 
 // 请求
