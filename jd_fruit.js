@@ -78,6 +78,18 @@ if ($.isNode()) {
 async function jdFruit() {
     subTitle = `【京东账号${$.index}】${$.nickName}`;
     try {
+                //新版领取水滴
+        try {
+            for (let index = 0; index < 5; index++) {
+                await $.get(taskUrl("receiveStageEnergy", '%7B%22version%22%3A14%2C%22channel%22%3A1%2C%22babelChannel%22%3A%22120%22%7D&appid=wh5'), function (err, resp, data) {
+                    console.log('领助力奖励:' + resp.body);
+                })
+                await $.wait(2000);
+            }
+
+        } catch (error) { }
+
+        
         await initForFarm();
         if ($.farmInfo.farmUserPro) {
             // option['media-url'] = $.farmInfo.farmUserPro.goodsImage;
@@ -1142,9 +1154,9 @@ async function gotThreeMealForFarm() {
 async function browseAdTaskForFarm(advertId, type) {
     const functionId = arguments.callee.name.toString();
     if (type === 0) {
-        $.browseResult = await request(functionId, {advertId, type});
+        $.browseResult = await request(functionId, { advertId, type, "version": 14, "channel": 1, "babelChannel": "45" });
     } else if (type === 1) {
-        $.browseRwardResult = await request(functionId, {advertId, type});
+        $.browseRwardResult = await request(functionId, { advertId, type, "version": 14, "channel": 1, "babelChannel": "45" });
     }
 }
 // 被水滴砸中API
@@ -1162,7 +1174,7 @@ async function initForFarm() {
     return new Promise(resolve => {
         const option =  {
             url: `${JD_API_HOST}?functionId=initForFarm`,
-            body: `body=${escape(JSON.stringify({"version":4}))}&appid=wh5&clientVersion=9.1.0`,
+            body: `body=${encodeURIComponent(JSON.stringify({"version":14}))}&appid=wh5&clientVersion=9.1.0`,
             headers: {
                 "accept": "*/*",
                 "accept-encoding": "gzip, deflate, br",
@@ -1204,7 +1216,7 @@ async function initForFarm() {
 async function taskInitForFarm() {
     console.log('\n初始化任务列表')
     const functionId = arguments.callee.name.toString();
-    $.farmTask = await request(functionId);
+    $.farmTask = await request(functionId, { "version": 14, "channel": 1, "babelChannel": "45" });
 }
 //获取好友列表API
 async function friendListInitForFarm() {
@@ -1379,7 +1391,7 @@ function safeGet(data) {
 }
 function taskUrl(function_id, body = {}) {
     return {
-        url: `${JD_API_HOST}?functionId=${function_id}&appid=wh5&body=${escape(JSON.stringify(body))}`,
+        url: `${JD_API_HOST}?functionId=${function_id}&appid=wh5&body=${encodeURIComponent(JSON.stringify(body))}`,
         headers: {
             Cookie: cookie,
             UserAgent: $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
